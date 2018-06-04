@@ -30,7 +30,7 @@ public class RecipeBootstrap implements ApplicationListener<ContextRefreshedEven
     }
 
     @Override
-    // @Transactional
+    @Transactional
     public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
         log.debug("The application context has been refreshed");
         recipeRepository.saveAll(getRecipes());

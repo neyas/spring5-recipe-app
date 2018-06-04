@@ -4,59 +4,72 @@ import com.neyas.spring5recipeapp.domain.*;
 import com.neyas.spring5recipeapp.repositories.CategoryRepository;
 import com.neyas.spring5recipeapp.repositories.RecipeRepository;
 import com.neyas.spring5recipeapp.repositories.UnitOfMeasureRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 
+import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Component
+@Slf4j
 public class RecipeBootstrap implements ApplicationListener<ContextRefreshedEvent> {
-    @Override
-    public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
-        recipeRepository.saveAll(getRecipies());
-    }
-
     private final CategoryRepository categoryRepository;
     private final RecipeRepository recipeRepository;
     private final UnitOfMeasureRepository unitOfMeasureRepository;
 
     public RecipeBootstrap(CategoryRepository categoryRepository, RecipeRepository recipeRepository, UnitOfMeasureRepository unitOfMeasureRepository) {
+        log.debug("Inside the constructor");
         this.categoryRepository = categoryRepository;
         this.recipeRepository = recipeRepository;
         this.unitOfMeasureRepository = unitOfMeasureRepository;
     }
 
-    private List<Recipe> getRecipies() {
+    @Override
+    // @Transactional
+    public void onApplicationEvent(ContextRefreshedEvent contextRefreshedEvent) {
+        log.debug("The application context has been refreshed");
+        recipeRepository.saveAll(getRecipes());
+    }
+
+    private List<Recipe> getRecipes() {
+        log.debug("Loading the recipe");
         List<Recipe> recipes = new ArrayList<>(2);
 
         Optional<UnitOfMeasure> eachUomOptional = unitOfMeasureRepository.findByDescription("Each");
         if (!eachUomOptional.isPresent()) {
+            log.error("Expected UOM not found");
             throw new RuntimeException("Excepted UOM not found");
         }
 
         Optional<UnitOfMeasure> tablespoonUomOptional = unitOfMeasureRepository.findByDescription("Tablespoon");
         if (!tablespoonUomOptional.isPresent()) {
+            log.error("Expected UOM not found");
             throw new RuntimeException("Excepted UOM not found");
         }
 
         Optional<UnitOfMeasure> teaspoonUomOptional = unitOfMeasureRepository.findByDescription("Teaspoon");
         if (!teaspoonUomOptional.isPresent()) {
+            log.error("Expected UOM not found");
             throw new RuntimeException("Excepted UOM not found");
         }
         Optional<UnitOfMeasure> dashUomOptional = unitOfMeasureRepository.findByDescription("Dash");
         if (!dashUomOptional.isPresent()) {
+            log.error("Expected UOM not found");
             throw new RuntimeException("Excepted UOM not found");
         }
         Optional<UnitOfMeasure> pintUomOptional = unitOfMeasureRepository.findByDescription("Pint");
         if (!pintUomOptional.isPresent()) {
+            log.error("Expected UOM not found");
             throw new RuntimeException("Excepted UOM not found");
         }
         Optional<UnitOfMeasure> cupUomOptional = unitOfMeasureRepository.findByDescription("Cup");
         if (!cupUomOptional.isPresent()) {
+            log.error("Expected UOM not found");
             throw new RuntimeException("Excepted UOM not found");
         }
 
@@ -77,8 +90,6 @@ public class RecipeBootstrap implements ApplicationListener<ContextRefreshedEven
         if (!mexicanCategoryOptional.isPresent()) {
             throw new RuntimeException("Expected category not found");
         }
-
-
         Category americanCategory = americanCategoryOptional.get();
         Category mexicanCategory = mexicanCategoryOptional.get();
 
@@ -115,27 +126,13 @@ public class RecipeBootstrap implements ApplicationListener<ContextRefreshedEven
         tacosRecipe.setPrepTime(20);
         tacosRecipe.setCookTime(9);
         tacosRecipe.setDifficulty(Difficulty.MODERATE);
-        tacosRecipe.setDirection("1 Prepare a gas or charcoal grill for medium-high, direct heat.\n" + "2 Make the marinade and coat the chicken: In a large bowl, stir together the chili powder, oregano, cumin, sugar, salt, garlic and orange zest. Stir in the orange juice and olive oil to make a loose paste. Add the chicken to the bowl and toss to coat all over.\n" + "Set aside to marinate while the grill heats and you prepare the rest of the toppings.\n" + "3 Grill the chicken: Grill the chicken for 3 to 4 minutes per side, or until a thermometer inserted into the thickest part of the meat registers 165F. Transfer to a plate and rest for 5 minutes.\n" +
-
-                "4 Warm the tortillas: Place each tortilla on the grill or on a hot, dry skillet over medium-high heat. As soon as you see pockets of the air start to puff up in the tortilla, turn it with tongs and heat for a few seconds on the other side.\n" +
-
-                "Wrap warmed tortillas in a tea towel to keep them warm until serving.\n" +
-
-                "5 Assemble the tacos: Slice the chicken into strips. On each tortilla, place a small handful of arugula. Top with chicken slices, sliced avocado, radishes, tomatoes, and onion slices. Drizzle with the thinned sour cream. Serve with lime wedges.");
+        tacosRecipe.setDirection("1 Prepare a gas or charcoal grill for medium-high, direct heat.\n" + "2 Make the marinade and coat the chicken: In a large bowl, stir together the chili powder, oregano, cumin, sugar, salt, garlic and orange zest. Stir in the orange juice and olive oil to make a loose paste. Add the chicken to the bowl and toss to coat all over.\n" + "Set aside to marinate while the grill heats and you prepare the rest of the toppings.\n" + "3 Grill the chicken: Grill the chicken for 3 to 4 minutes per side, or until a thermometer inserted into the thickest part of the meat registers 165F. Transfer to a plate and rest for 5 minutes.\n" + "4 Warm the tortillas: Place each tortilla on the grill or on a hot, dry skillet over medium-high heat. As soon as you see pockets of the air start to puff up in the tortilla, turn it with tongs and heat for a few seconds on the other side.\n" + "Wrap warmed tortillas in a tea towel to keep them warm until serving.\n" + "5 Assemble the tacos: Slice the chicken into strips. On each tortilla, place a small handful of arugula. Top with chicken slices, sliced avocado, radishes, tomatoes, and onion slices. Drizzle with the thinned sour cream. Serve with lime wedges.");
 
         Notes tacosNotes = new Notes();
         tacosNotes.setRecipeNotes("We have a family motto and it is this: Everything goes better in a tortilla.\n" +
-
-                "Any and every kind of leftover can go inside a warm tortilla, usually with a healthy dose of pickled jalapenos. I can always sniff out a late-night snacker when the aroma of tortillas heating in a hot pan on the stove comes wafting through the house.\n" +
-
-                "Today’s tacos are more purposeful – a deliberate meal instead of a secretive midnight snack!\n" +
-
-                "First, I marinate the chicken briefly in a spicy paste of ancho chile powder, oregano, cumin, and sweet orange juice while the grill is heating. You can also use this time to prepare the taco toppings.\n" +
-
-                "Grill the chicken, then let it rest while you warm the tortillas. Now you are ready to assemble the tacos and dig in. The whole meal comes together in about 30 minutes!\n\nRead More at https://www.simplyrecipes.com/recipes/spicy_grilled_chicken_tacos/");
+                "Any and every kind of leftover can go inside a warm tortilla, usually with a healthy dose of pickled jalapenos. I can always sniff out a late-night snacker when the aroma of tortillas heating in a hot pan on the stove comes wafting through the house.\n" + "Today’s tacos are more purposeful – a deliberate meal instead of a secretive midnight snack!\n" + "First, I marinate the chicken briefly in a spicy paste of ancho chile powder, oregano, cumin, and sweet orange juice while the grill is heating. You can also use this time to prepare the taco toppings.\n" + "Grill the chicken, then let it rest while you warm the tortillas. Now you are ready to assemble the tacos and dig in. The whole meal comes together in about 30 minutes!\n\nRead More at https://www.simplyrecipes.com/recipes/spicy_grilled_chicken_tacos/");
 //        tacosNotes.setRecipe(tacosRecipe);
         tacosRecipe.setNotes(tacosNotes);
-
 
         // for chicken
         tacosRecipe.addIngredients(new Ingredient("ancho chili powder", new BigDecimal(2), tablespoonUom))
@@ -164,6 +161,8 @@ public class RecipeBootstrap implements ApplicationListener<ContextRefreshedEven
         tacosRecipe.getCategories().add(mexicanCategory);
 
         recipes.add(tacosRecipe);
+
+        log.info("There are following entries in the set " + recipes);
 
         return recipes;
     }

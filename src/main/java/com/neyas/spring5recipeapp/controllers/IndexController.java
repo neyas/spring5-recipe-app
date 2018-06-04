@@ -5,6 +5,7 @@ import com.neyas.spring5recipeapp.domain.UnitOfMeasure;
 import com.neyas.spring5recipeapp.repositories.CategoryRepository;
 import com.neyas.spring5recipeapp.repositories.UnitOfMeasureRepository;
 import com.neyas.spring5recipeapp.services.RecipeService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,6 +14,7 @@ import javax.jws.WebParam;
 import java.util.Optional;
 
 @Controller
+@Slf4j
 public class IndexController {
 
     private final RecipeService recipeService;
@@ -23,7 +25,7 @@ public class IndexController {
 
     @RequestMapping({"/","","/index"})
     public String getIndexPage(Model model) {
-
+        log.info("Loading the index page");
         model.addAttribute("recipes", recipeService.getRecipies());
 
         return "index";
